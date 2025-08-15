@@ -4,3 +4,8 @@ This playbook will execute using an incident based trigger and determine which m
 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjonade%2FSentinelRunbooks%2Frefs%2Fheads%2Fmain%2FDefender%20for%20Office%20365%2FTrigger%20AST%20for%20NonReporting%20users%2Fazuredeploy.json)
+
+
+## Post deployment
+
+After using the ARM template to deploy the Logic App, the required Graph API permissions need to be added to the Managed Service Principal that was created. This can be achieved by running the `addGraphPermission.ps1` script in PowerShell.
