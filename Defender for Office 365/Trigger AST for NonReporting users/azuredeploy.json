@@ -7,7 +7,7 @@
             "type": "String"
         },
         "SenderEmailAddress": {
-            "defaultValue": "itsecurity@lab.prolab.xyz",
+            "defaultValue": "itsecurity@contoso.com",
             "type": "String"
         }
     },
