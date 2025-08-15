@@ -21,35 +21,40 @@ if ($ManagedIdentity -match '(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-
     $MI = Get-MgServicePrincipal -Filter "DisplayName eq '$ManagedIdentity'"
 }
 
+# Continue if the service principal was found
+If ($MI) {
+    # Get Microsoft Graph SPN
+    $GraphSPN = Get-MgServicePrincipal -Filter "AppId eq '00000003-0000-0000-c000-000000000000'"
+    Write-Host ""
 
-# Get Microsoft Graph SPN
-$GraphSPN = Get-MgServicePrincipal -Filter "AppId eq '00000003-0000-0000-c000-000000000000'"
-Write-Host ""
-
-$PermissionName = "SecurityIncident.Read.All"
-Write-Host "Adding $PermissionName to Service Principal"
-$AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
-Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
-
-
-$PermissionName = "SecurityAlert.Read.All"
-Write-Host "Adding $PermissionName to Service Principal"
-$AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
-Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
+    $PermissionName = "SecurityIncident.Read.All"
+    Write-Host "Adding $PermissionName to Service Principal"
+    $AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
+    Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
 
 
-$PermissionName = "ThreatHunting.Read.All"
-Write-Host "Adding $PermissionName to Service Principal"
-$AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
-Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
+    $PermissionName = "SecurityAlert.Read.All"
+    Write-Host "Adding $PermissionName to Service Principal"
+    $AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
+    Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
 
 
-$PermissionName = "AttackSimulation.ReadWrite.All"
-Write-Host "Adding $PermissionName to Service Principal"
-$AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
-Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
+    $PermissionName = "ThreatHunting.Read.All"
+    Write-Host "Adding $PermissionName to Service Principal"
+    $AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
+    Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
 
-Write-Host ""
-Write-Host "Complete. Disconnecting from Graph."
 
-Disconnect-MgGraph | Out-Null
+    $PermissionName = "AttackSimulation.ReadWrite.All"
+    Write-Host "Adding $PermissionName to Service Principal"
+    $AppRole = $GraphSPN.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains "Application"}
+    Try { New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI.Id -PrincipalId $MI.Id -ResourceId $GraphSPN.Id -AppRoleId $AppRole.Id -ErrorAction Stop | Out-Null } Catch {}
+
+    Write-Host ""
+    Write-Host "Complete. Disconnecting from Graph."
+
+    Disconnect-MgGraph | Out-Null
+
+} else {
+    Write-Error "Get-MgServicePrincipal was unable to retrieve the Service Principal"
+}
