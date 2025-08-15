@@ -82,46 +82,6 @@
                         }
                     },
                     "actions": {
-                        "Create_How_To_guide_Simulation_against_non_reporters": {
-                            "runAfter": {
-                                "Loop_to_get_non-reporting_users": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "Http",
-                            "inputs": {
-                                "uri": "https://graph.microsoft.com/beta/security/attackSimulation/simulations",
-                                "method": "POST",
-                                "body": {
-                                    "attackTechnique": "PhishTraining",
-                                    "createdBy": {
-                                        "email": "[parameters('SenderEmailAddress')]"
-                                    },
-                                    "displayName": "Educate phish non-reporters",
-                                    "durationInDays": "3",
-                                    "includedAccountTarget": {
-                                        "accountTargetEmails": "@variables('NonReportingUsers')",
-                                        "type": "addressBook"
-                                    },
-                                    "landingPage@odata.bind": "https://graph.microsoft.com/beta/security/attacksimulation/landingPages/1cdfcb49-1065-46a6-b1c3-672071e20a6b",
-                                    "loginPage@odata.bind": "https://graph.microsoft.com/beta/security/attacksimulation/loginPages/3d96ca8a-ef5b-446d-9801-3a9484daf5b1",
-                                    "payload@odata.bind": "https://graph.microsoft.com/v1.0/security/attacksimulation/payloads/46b2a4ab-ad84-4ca0-8ace-1032cc0a4801",
-                                    "status": "scheduled",
-                                    "trainingSetting": {
-                                        "settingType": "noTraining"
-                                    }
-                                },
-                                "authentication": {
-                                    "type": "ManagedServiceIdentity",
-                                    "audience": "https://graph.microsoft.com"
-                                }
-                            },
-                            "runtimeConfiguration": {
-                                "contentTransfer": {
-                                    "transferMode": "Chunked"
-                                }
-                            }
-                        },
                         "Declare_Network_Message_ID_Variable": {
                             "runAfter": {
                                 "Declare_Reporting_Users_Variable": [
@@ -682,6 +642,64 @@
                                 ]
                             },
                             "type": "Foreach"
+                        },
+                        "Create_a_Simulation_if_there_were_Non_Reporters": {
+                            "actions": {
+                                "Create_How_To_guide_Simulation_against_non_reporters": {
+                                    "type": "Http",
+                                    "inputs": {
+                                        "uri": "https://graph.microsoft.com/beta/security/attackSimulation/simulations",
+                                        "method": "POST",
+                                        "body": {
+                                            "attackTechnique": "PhishTraining",
+                                            "createdBy": {
+                                                "email": "itsecurity@lab.prolab.xyz"
+                                            },
+                                            "displayName": "Educate phish non-reporters",
+                                            "durationInDays": "3",
+                                            "includedAccountTarget": {
+                                                "accountTargetEmails": "@variables('NonReportingUsers')",
+                                                "type": "addressBook"
+                                            },
+                                            "landingPage@odata.bind": "https://graph.microsoft.com/beta/security/attacksimulation/landingPages/1cdfcb49-1065-46a6-b1c3-672071e20a6b",
+                                            "loginPage@odata.bind": "https://graph.microsoft.com/beta/security/attacksimulation/loginPages/3d96ca8a-ef5b-446d-9801-3a9484daf5b1",
+                                            "payload@odata.bind": "https://graph.microsoft.com/v1.0/security/attacksimulation/payloads/46b2a4ab-ad84-4ca0-8ace-1032cc0a4801",
+                                            "status": "scheduled",
+                                            "trainingSetting": {
+                                                "settingType": "noTraining"
+                                            }
+                                        },
+                                        "authentication": {
+                                            "type": "ManagedServiceIdentity",
+                                            "audience": "https://graph.microsoft.com"
+                                        }
+                                    },
+                                    "runtimeConfiguration": {
+                                        "contentTransfer": {
+                                            "transferMode": "Chunked"
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Loop_to_get_non-reporting_users": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {}
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "greaterOrEquals": [
+                                            "@length(variables('NonReportingUsers'))",
+                                            1
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
                         }
                     },
                     "outputs": {}
